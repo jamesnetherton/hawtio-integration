@@ -10,10 +10,10 @@ namespace SpringBoot {
 
     getHealth(): ng.IPromise<Health> {
       log.debug('Fetch health data');
-      return this.jolokiaService.getAttribute('org.springframework.boot:type=Endpoint,name=healthEndpoint', 'Data')
+      return this.jolokiaService.execute('org.springframework.boot:type=Endpoint,name=Health', 'health')
         .then(data => {
           const status = this.toHealthStatus(data.status);
-          const items = this.toItems(data);
+          const items = this.toItems(data.details);
           return new Health(status, items);
         });
     }
@@ -27,10 +27,8 @@ namespace SpringBoot {
         .filter(pair => _.isObject(pair[1]))
         .map(pair => ({
           title: this.humanizeService.toSentenceCase(pair[0]),
-          info: _.toPairs(pair[1]).map(pair => this.humanizeService.toSentenceCase(pair[0]) + ': ' + pair[1])
+          info: _.toPairs(pair[1]['details']).map(pair => this.humanizeService.toSentenceCase(pair[0]) + ': ' + pair[1])
         }));
     }
-    
   }
-
 }

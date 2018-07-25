@@ -9,18 +9,21 @@ namespace SpringBoot {
     info: any
 
     constructor(trace) {
+      const parser = document.createElement('a');
+      parser.href = trace.request.uri;
+
       this.timestamp = trace.timestamp;
-      this.method = trace.info.method;
-      this.path = trace.info.path;
-      this.info = trace.info;
+      this.method = trace.request.method;
+      this.path = parser.pathname;
+      this.info = trace;
 
-      if (this.info.timeTaken) {
-        this.timeTaken = parseInt(this.info.timeTaken);
+      if (angular.isNumber(trace.timeTaken)) {
+        this.timeTaken = parseInt(trace.timeTaken);
       }
 
-      if (this.info.headers.response) {
-        this.httpStatusCode = parseInt(this.info.headers.response.status);
+      if (trace.response.status) {
+        this.httpStatusCode = parseInt(trace.response.status);
       }
-    }  
+    }
   }
 }
